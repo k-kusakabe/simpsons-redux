@@ -5,10 +5,10 @@ import Simpsons from "./components/Simpsons";
 import Controls from "./components/Controls";
 import "./App.css";
 import { connect } from "react-redux";
-import { NEW_API_DATA } from "./store/types";
+import { NEW_API_DATA, SET_SEARCH_INPUT, SET_NAME_INPUT } from "./store/types";
 
 class App extends Component {
-  state = {};
+  state = {}; //=> removing blank state causes crash until everything has been migrated
 
   async componentDidMount() {
     const { data } = await axios.get(
@@ -46,18 +46,19 @@ class App extends Component {
 
   //function to add state to filter by name
   onSearchInput = (e) => {
-    this.setState({ searchInput: e.target.value });
+    // this.setState({ searchInput: e.target.value });
+    this.props.dispatch({ type: SET_SEARCH_INPUT, payload: e.target.value });
   };
 
   //function to add state to sort by name
   onNameInput = (e) => {
-    this.setState({ nameInput: e.target.value });
+    // this.setState({ nameInput: e.target.value });
+    this.props.dispatch({ type: SET_NAME_INPUT, payload: e.target.value });
   };
 
   //function to get filtered list
   getFilteredList = () => {
-    const { searchInput, nameInput } = this.state;
-    const { simpsons } = this.props;
+    const { simpsons, searchInput, nameInput } = this.props;
 
     let filteredList = [...simpsons];
 
@@ -134,7 +135,11 @@ class App extends Component {
 }
 
 function mapStateToProps(state) {
-  return { simpsons: state.simpsons };
+  return {
+    simpsons: state.simpsons,
+    searchInput: state.searchInput,
+    nameInput: state.nameInput,
+  };
 }
 
 export default connect(mapStateToProps)(App);
