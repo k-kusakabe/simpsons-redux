@@ -4,6 +4,8 @@ import Loading from "./components/Loading";
 import Simpsons from "./components/Simpsons";
 import Controls from "./components/Controls";
 import "./App.css";
+import { connect } from "react-redux";
+import { NEW_API_DATA } from "./store/types";
 
 class App extends Component {
   state = {};
@@ -17,7 +19,7 @@ class App extends Component {
       element.id = index + Math.random();
     });
 
-    this.setState({ simpsons: data });
+    this.props.dispatch({ type: NEW_API_DATA, payload: data });
   }
 
   onLikeToggle = (id) => {
@@ -54,7 +56,8 @@ class App extends Component {
 
   //function to get filtered list
   getFilteredList = () => {
-    const { simpsons, searchInput, nameInput } = this.state;
+    const { searchInput, nameInput } = this.state;
+    const { simpsons } = this.props;
 
     let filteredList = [...simpsons];
 
@@ -101,7 +104,8 @@ class App extends Component {
   };
 
   render() {
-    const { simpsons } = this.state;
+    const { simpsons } = this.props;
+
     if (!simpsons) return <Loading />;
     if (simpsons.length === 0) return <p>You deleted everything!</p>;
 
@@ -129,7 +133,11 @@ class App extends Component {
   }
 }
 
-export default App;
+function mapStateToProps(state) {
+  return { simpsons: state.simpsons };
+}
+
+export default connect(mapStateToProps)(App);
 
 //for loop cannot be used. Use map method (map method always returns something)
 //use key to improve performance for iteration (otherwise, React re-render all list items)
